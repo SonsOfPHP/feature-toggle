@@ -8,14 +8,25 @@ use SonsOfPHP\Contract\FeatureToggle\ContextInterface;
 use SonsOfPHP\Contract\FeatureToggle\ToggleInterface;
 
 /**
- * Always Disabled.
+ * Chain Toggle will take multiple Toggles and if any are enabled,
+ * it will be enabled.
  *
  * @author Joshua Estes <joshua@sonsofphp.com>
  */
-class AlwaysDisabledToggle implements ToggleInterface
+class ChainToggle implements ToggleInterface
 {
+    public function __construct(
+        private array $toggles,
+    ) {}
+
     public function isEnabled(?ContextInterface $context = null): bool
     {
+        foreach ($this->toggles as $toggle) {
+            if ($toggle->isEnabled($context)) {
+                return true;
+            }
+        }
+
         return false;
     }
 }
